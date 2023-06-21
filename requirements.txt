@@ -1,0 +1,7 @@
+# Function dependencies, for example:
+# package>=version
+oauth2client
+gspread
+requests
+python-dateutil
+lxml
