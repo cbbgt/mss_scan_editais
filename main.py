@@ -23,5 +23,6 @@ def main(request):
     request_json = request.get_json()
     action = request_json.get('action')
     if request_json.get('action') == '/scan':
-        return scan_all_urls_presenter(request=request)
+        response = scan_all_urls_presenter(request=request)
+        return (response[0], response[1], headers)
     return (f'Action {action} Not Found', 404, headers)

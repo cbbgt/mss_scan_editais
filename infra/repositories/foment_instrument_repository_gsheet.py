@@ -19,15 +19,17 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
         gc = gspread.authorize(credentials)
         wks = gc.open_by_key('1lCDzonMnRdp27YATOShnepldzHSuEGqIZgvt8Lyy3es')
         self.control_sheet = wks.worksheet("Controle")
-        self.control_sheet_values = self.control_sheet.get_all_values()
+        self.control_sheet_values = self.control_sheet.get_all_values()[1:]
 
     def scan_all_urls(self):
         foment_instruments = self.get_all_foment_instruments()
         foment_instruments_changed = []
         for foment_instrument in foment_instruments:
+            print(f"Escaneando {foment_instrument.name}")
             if foment_instrument.edital_url != "":
                 actual_page = get_html(requests.get(
-                    foment_instrument.edital_url))
+                    foment_instrument.edital_url), '/html')
+                print(actual_page)
                 if (foment_instrument.edital_html != actual_page):
                     foment_instruments_changed.append(
                         foment_instrument.edital_url)
@@ -40,7 +42,8 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
                 )
             if foment_instrument.news_url != "":
                 actual_page = get_html(
-                    requests.get(foment_instrument.news_url))
+                    requests.get(foment_instrument.news_url), '/html')
+                print(actual_page)
                 if (foment_instrument.news_html != actual_page):
                     foment_instruments_changed.append(
                         foment_instrument.news_url)
@@ -67,6 +70,7 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
         return True
 
     def get_all_foment_instruments(self) -> List[FomentInstrument]:
+        self.control_sheet_values = self.control_sheet.get_all_values()[1:]
         all_foment_instruments = []
         for foment_instrument in self.control_sheet_values:
             all_foment_instruments.append(FomentInstrument(
@@ -83,7 +87,8 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
         return all_foment_instruments
 
     def get_foment_instrument_by_code(self, fomentInstrumentCode: str) -> FomentInstrument:
-        for foment_instrument in self.control_sheet_values:
+        foment_instruments = self.get_all_foment_instruments()
+        for foment_instrument in foment_instruments:
             if foment_instrument.code == fomentInstrumentCode:
                 return FomentInstrument(
                     code=foment_instrument[0],
@@ -99,24 +104,25 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
         return None
 
     def update_foment_instrument(self, fomentInstrumentCode: str, newState: FomentInstrument) -> FomentInstrument:
-        row_number = 0
-        for foment_instrument in self.control_sheet_values:
+        row_number = 1
+        foment_instruments = self.get_all_foment_instruments()
+        for foment_instrument in foment_instruments:
             row_number += 1
             if foment_instrument.code == fomentInstrumentCode:
                 self.control_sheet.update_cell(
-                    row_number, 2, foment_instrument.acronym)
+                    row_number, 2, newState.acronym)
                 self.control_sheet.update_cell(
-                    row_number, 3, foment_instrument.name)
+                    row_number, 3, newState.name)
                 self.control_sheet.update_cell(
-                    row_number, 4, foment_instrument.foment_type)
+                    row_number, 4, newState.foment_type)
                 self.control_sheet.update_cell(
-                    row_number, 5, foment_instrument.edital_url)
+                    row_number, 5, newState.edital_url)
                 self.control_sheet.update_cell(
-                    row_number, 6, foment_instrument.edital_html)
+                    row_number, 6, newState.edital_html)
                 self.control_sheet.update_cell(
-                    row_number, 7, foment_instrument.news_url)
+                    row_number, 7, newState.news_url)
                 self.control_sheet.update_cell(
-                    row_number, 8, foment_instrument.new_html)
+                    row_number, 8, newState.news_html)
 
         return newState
 

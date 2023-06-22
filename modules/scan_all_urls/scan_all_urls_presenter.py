@@ -11,4 +11,4 @@ def scan_all_urls_presenter(request):
 
     controller(request=request)
 
-    return ("Ok", 200, headers)
+    return ("Ok", 200)
