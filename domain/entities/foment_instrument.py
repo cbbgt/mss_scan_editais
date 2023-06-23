@@ -7,7 +7,7 @@ class FomentInstrument(abc.ABC):
     code: str
     acronym: str
     name: str
-    foment_type: list[str]
+    foment_type: List[str]
     edital_url: str
     edital_html: str
     news_url: str
