@@ -6,6 +6,7 @@ from domain.entities.foment_instrument import FomentInstrument
 from domain.repositories.foment_instrument_interface import IFomentInstrumentRepository
 from helpers.send_email import send_email
 from helpers.get_html_async import get_html_async
+from helpers.get_credentials_google import get_credentials_google
 import time
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -16,9 +17,7 @@ requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
     def __init__(self) -> None:
         super().__init__()
-        scope = ['https://spreadsheets.google.com/feeds']
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(
-            'credentials.json', scope)
+        credentials = get_credentials_google()
         gc = gspread.authorize(credentials)
         wks = gc.open_by_key('1lCDzonMnRdp27YATOShnepldzHSuEGqIZgvt8Lyy3es')
         self.control_sheet = wks.worksheet("Controle")
