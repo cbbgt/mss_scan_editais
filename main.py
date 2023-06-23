@@ -1,10 +1,17 @@
 from modules.scan_all_urls.scan_all_urls_presenter import scan_all_urls_presenter
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from helpers.get_html_async import get_html_async
 from helpers.send_email import send_email
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/scan")
