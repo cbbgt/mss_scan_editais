@@ -1,13 +1,16 @@
 
+from oauth2client.service_account import ServiceAccountCredentials
+import gspread
 from typing import List
 from domain.entities.foment_instrument import FomentInstrument
 from domain.repositories.foment_instrument_interface import IFomentInstrumentRepository
 from helpers.send_email import send_email
-from helpers.get_html import get_html
+from helpers.get_html_async import get_html_async
+import time
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
 # Conexão com o db
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 
 
 class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
@@ -21,39 +24,41 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
         self.control_sheet = wks.worksheet("Controle")
         self.control_sheet_values = self.control_sheet.get_all_values()[1:]
 
-    def scan_all_urls(self):
+    async def scan_all_urls(self):
         foment_instruments = self.get_all_foment_instruments()
         foment_instruments_changed = []
         for foment_instrument in foment_instruments:
             print(f"Escaneando {foment_instrument.name}")
             if foment_instrument.edital_url != "":
-                actual_page = get_html(requests.get(
-                    foment_instrument.edital_url), '/html')
-                print(actual_page)
+                print(foment_instrument.edital_url)
+                actual_page = await get_html_async(
+                    foment_instrument.edital_url)
+                actual_page = actual_page[:49999]
+                print(len(actual_page))
                 if (foment_instrument.edital_html != actual_page):
                     foment_instruments_changed.append(
                         foment_instrument.edital_url)
-                # save new html
-                new_foment_instrument = foment_instrument
-                new_foment_instrument.edital_html = actual_page
-                self.update_foment_instrument(
-                    fomentInstrumentCode=foment_instrument.code,
-                    newState=new_foment_instrument
-                )
+                    # save new html
+                    new_foment_instrument = foment_instrument
+                    new_foment_instrument.edital_html = actual_page
+                    self.update_foment_instrument(
+                        fomentInstrumentCode=foment_instrument.code,
+                        newState=new_foment_instrument
+                    )
             if foment_instrument.news_url != "":
-                actual_page = get_html(
-                    requests.get(foment_instrument.news_url), '/html')
-                print(actual_page)
+                actual_page = await get_html_async(
+                    foment_instrument.news_url)
+                actual_page = actual_page[:49999]
                 if (foment_instrument.news_html != actual_page):
                     foment_instruments_changed.append(
                         foment_instrument.news_url)
-                # save new html
-                new_foment_instrument = foment_instrument
-                new_foment_instrument.news_html = actual_page
-                self.update_foment_instrument(
-                    fomentInstrumentCode=foment_instrument.code,
-                    newState=new_foment_instrument
-                )
+                    # save new html
+                    new_foment_instrument = foment_instrument
+                    new_foment_instrument.news_html = actual_page
+                    self.update_foment_instrument(
+                        fomentInstrumentCode=foment_instrument.code,
+                        newState=new_foment_instrument
+                    )
 
         email_body = f"""
                 <h1>Alerta! Houve uma mudança nos seguintes sites:</h1>
@@ -123,7 +128,8 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
                     row_number, 7, newState.news_url)
                 self.control_sheet.update_cell(
                     row_number, 8, newState.news_html)
-
+        print("Esperando 0.5 segundo...")
+        time.sleep(3)
         return newState
 
     # To Do
