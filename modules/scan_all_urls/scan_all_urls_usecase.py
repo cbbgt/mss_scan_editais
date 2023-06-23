@@ -7,5 +7,6 @@ class ScanAllUrlsUsecase:
     def __init__(self, repo: IFomentInstrumentRepository) -> None:
         self.repository = repo
 
-    def __call__(self, *args: Any, **kwds: Any) -> Any:
-        self.repository.scan_all_urls()
+    async def __call__(self, *args: Any, **kwds: Any) -> bool:
+        await self.repository.scan_all_urls()
+        return True

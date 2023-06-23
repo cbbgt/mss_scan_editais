@@ -7,8 +7,8 @@ usecase = ScanAllUrlsUsecase(repo=repo_instrument_foment)
 controller = ScanAllUrlsController(usecase=usecase)
 
 
-def scan_all_urls_presenter(request):
-
-    controller(request=request)
+async def scan_all_urls_presenter():
+    request = ''
+    await controller(request=request)
 
     return ("Ok", 200)

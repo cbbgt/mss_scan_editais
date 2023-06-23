@@ -5,3 +5,5 @@ gspread
 requests
 python-dateutil
 lxml
+fastapi
+requests-html

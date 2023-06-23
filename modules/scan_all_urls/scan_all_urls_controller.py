@@ -8,8 +8,9 @@ class ScanAllUrlsController:
     def __init__(self, usecase: ScanAllUrlsUsecase) -> None:
         self.ScanAllUrlsUsecase = usecase
 
-    def __call__(self, request: IRequest) -> IResponse:
+    async def __call__(self, request: IRequest) -> IResponse:
         try:
-            self.ScanAllUrlsUsecase()
+            print("cheguei antes do usecase")
+            await self.ScanAllUrlsUsecase()
         except Exception as err:
             print(f"Erro no arquivo scan_all_urls_controller.py): {err}")
