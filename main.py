@@ -33,3 +33,8 @@ async def scan_url(data: dict = None):
 def send_email_via_fastapi(data: dict = None):
     send_email('Teste', '<p>enviando pela fastapi</p>')
     return 200
+
+
+@app.get('/')
+def home():
+    return ['RADAR DA INOVAÇÃO', 200]
