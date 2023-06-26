@@ -7,3 +7,4 @@ python-dateutil
 lxml
 fastapi
 requests-html
+uvicorn
