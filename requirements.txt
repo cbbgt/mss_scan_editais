@@ -22,3 +22,4 @@ typing_extensions==4.4.0
 uvloop==0.17.0
 watchfiles==0.18.1
 websockets==10.4
+pyppeteer-install
