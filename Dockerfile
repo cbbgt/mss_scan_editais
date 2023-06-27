@@ -19,17 +19,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copie o restante dos arquivos do projeto para o contêiner
 COPY . .
 
-# Copie o arquivo .env para o contêiner
-RUN if [ -f .env ]; then cp .env .; fi
+# Copie o arquivo .env para o contêiner, se existir
+COPY .env .env
 
 # Exponha a porta que a aplicação FastAPI irá usar (por exemplo, a porta 8000)
 EXPOSE 8000
 
+# Defina o ambiente como produção por padrão
+ENV ENVIRONMENT=production
+
 # Inicie a aplicação FastAPI quando o contêiner for executado
-
-# Verifique se está no ambiente de produção
-ARG ENVIRONMENT=production
-
-# Defina o CMD com base no ambiente
-CMD [ "sh", "-c", "if [ \"$ENVIRONMENT\" = \"production\" ]; then uvicorn main:app --host 0.0.0.0 --port $PORT; else uvicorn main:app --host 0.0.0.0 --port 8000; fi" ]
-
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT
