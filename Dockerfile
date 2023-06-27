@@ -20,10 +20,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Copie o arquivo .env para o contêiner
-COPY .env .env
+RUN if [ -f .env ]; then cp .env .; fi
 
 # Exponha a porta que a aplicação FastAPI irá usar (por exemplo, a porta 8000)
 EXPOSE 8000
 
 # Inicie a aplicação FastAPI quando o contêiner for executado
-CMD ["/bin/bash", "-c", "source .env && uvicorn main:app --host 0.0.0.0 --port 8000"]
+CMD ["/bin/bash", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000"]
