@@ -67,7 +67,7 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
                         fomentInstrumentCode=foment_instrument.code,
                         newState=new_foment_instrument
                     )
-        browser.close()
+        await browser.close()
         email_body = f"""
                 <h1>Alerta! Houve uma mudança nos seguintes sites:</h1>
                 <div>
