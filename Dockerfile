@@ -28,7 +28,7 @@ EXPOSE 8000
 # Inicie a aplicação FastAPI quando o contêiner for executado
 
 # Verifique se está no ambiente de produção
-ARG ENVIRONMENT=development
+ARG ENVIRONMENT=production
 
 # Defina o CMD com base no ambiente
 CMD if [ "$ENVIRONMENT" = "production" ]; then \
