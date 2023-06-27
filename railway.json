@@ -1,5 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "docker build -t radar-inovacao .",
-  "startCommand": "docker run -p $RAILWAY_PORT:8000 radar-inovacao"
+  "buildCommand": "docker-compose build",
+  "startCommand": "docker-compose up"
 }
