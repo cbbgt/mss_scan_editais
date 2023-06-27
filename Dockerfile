@@ -2,7 +2,7 @@
 FROM python:3.9-slim-buster
 
 # Instale as dependências do Chromium e do FastAPI
-RUN apt-get update && apt-get install -y chromium
+RUN apt-get update && apt-get install -y chromium && pip install --upgrade pip
 
 # Defina uma variável de ambiente para permitir que o Chromium seja executado sem sandbox
 ENV CHROME_BIN=/usr/bin/chromium
@@ -32,7 +32,7 @@ ARG ENVIRONMENT=production
 
 # Defina o CMD com base no ambiente
 CMD if [ "$ENVIRONMENT" = "production" ]; then \
-    uvicorn main:app --host 0.0.0.0 --port $RAILWAY_PORT; \
+    uvicorn main:app --host 0.0.0.0 --port $PORT; \
     else \
     /bin/bash -c "uvicorn main:app --host 0.0.0.0 --port 8000"; \
     fi
