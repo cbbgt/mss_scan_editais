@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Copie o arquivo .env para o contêiner, se existir
-COPY .env .env
+RUN if test -f .env; then cp .env .; fi
 
 # Exponha a porta que a aplicação FastAPI irá usar (por exemplo, a porta 8000)
 EXPOSE 8000
