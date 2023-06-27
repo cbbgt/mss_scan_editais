@@ -34,6 +34,8 @@ async def scan_url(data: dict = None):
 
     A = await get_html_async(data.get('url'), browser)
 
+    browser.close()
+
     return [A]
 
 
