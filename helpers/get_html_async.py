@@ -28,8 +28,8 @@ async def get_html(url, browser):
     return 'PÁGINA COM ERRO'
 
 
-async def get_html_async(url):
-    html = await get_html(url)
+async def get_html_async(url, browser):
+    html = await get_html(url, browser)
     html = reduce_html(html)
     print(f'TAMANHO DO TEXTO: {len(html)}')
     return html
