@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from helpers.get_html_async import get_html_async
 from helpers.send_email import send_email
 
+from pyppeteer import launch
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -23,16 +25,16 @@ async def scan_all_urls():
 @app.post("/scanUrl")
 async def scan_url(data: dict = None):
     print(f"A url que iremos analisar: {data.get('url')}")
+    browser = await launch({
+        'executablePath': '/usr/bin/chromium',
+        'args': ['--no-sandbox'],
+        "ignoreHTTPSErrors": True,
+        'headless': True
+    })
 
-    A = await get_html_async(data.get('url'))
+    A = await get_html_async(data.get('url'), browser)
 
     return [A]
-
-
-@app.post('/sendEmail')
-def send_email_via_fastapi(data: dict = None):
-    send_email('Teste', '<p>enviando pela fastapi</p>')
-    return 200
 
 
 @app.get('/')
