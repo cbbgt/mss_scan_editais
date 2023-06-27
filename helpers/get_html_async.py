@@ -1,10 +1,10 @@
-from pyppeteer import launch
 from .reduce_html import reduce_html
 from .send_email import send_email
 
 
-async def get_html(url):
-    browser = await launch(headless=True)
+async def get_html(url, browser):
+    # browser = await launch(headless=True)
+
     page = await browser.newPage()
 
     try:
@@ -13,7 +13,7 @@ async def get_html(url):
             "() => document.body.innerText"
         )
         # html = await page.content()
-        await browser.close()
+        await page.close()
         return html
     except Exception as err:
         send_email(
