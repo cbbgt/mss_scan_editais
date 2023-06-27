@@ -26,4 +26,13 @@ RUN if [ -f .env ]; then cp .env .; fi
 EXPOSE 8000
 
 # Inicie a aplicação FastAPI quando o contêiner for executado
-CMD ["/bin/bash", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000"]
+
+# Verifique se está no ambiente de produção
+ARG ENVIRONMENT=development
+
+# Defina o CMD com base no ambiente
+CMD if [ "$ENVIRONMENT" = "production" ]; then \
+    uvicorn main:app --host 0.0.0.0 --port $RAILWAY_PORT; \
+    else \
+    /bin/bash -c "uvicorn main:app --host 0.0.0.0 --port 8000"; \
+    fi

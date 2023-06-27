@@ -31,6 +31,7 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
         browser = await launch({
             'executablePath': '/usr/bin/chromium',
             'args': ['--no-sandbox'],
+            "ignoreHTTPSErrors": True,
             'headless': True
         })
         foment_instruments = self.get_all_foment_instruments()
