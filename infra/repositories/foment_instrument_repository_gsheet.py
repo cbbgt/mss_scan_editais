@@ -5,6 +5,7 @@ from typing import List
 from domain.entities.foment_instrument import FomentInstrument
 from domain.repositories.foment_instrument_interface import IFomentInstrumentRepository
 from helpers.send_email import send_email
+from pyppeteer import launch
 from helpers.get_html_async import get_html_async
 from helpers.get_credentials_google import get_credentials_google
 import time
@@ -18,12 +19,20 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
     def __init__(self) -> None:
         super().__init__()
         credentials = get_credentials_google()
+        # scope = ['https://spreadsheets.google.com/feeds']
+        # credentials = ServiceAccountCredentials.from_json_keyfile_name(
+        #     'credentials.json', scope)
         gc = gspread.authorize(credentials)
         wks = gc.open_by_key('1lCDzonMnRdp27YATOShnepldzHSuEGqIZgvt8Lyy3es')
         self.control_sheet = wks.worksheet("Controle")
         self.control_sheet_values = self.control_sheet.get_all_values()[1:]
 
     async def scan_all_urls(self):
+        browser = await launch({
+            'executablePath': '/usr/bin/chromium',
+            'args': ['--no-sandbox'],
+            'headless': True
+        })
         foment_instruments = self.get_all_foment_instruments()
         foment_instruments_changed = []
         for foment_instrument in foment_instruments:
@@ -31,7 +40,7 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
             if foment_instrument.edital_url != "":
                 print(foment_instrument.edital_url)
                 actual_page = await get_html_async(
-                    foment_instrument.edital_url)
+                    foment_instrument.edital_url, browser)
                 actual_page = actual_page[:49999]
                 print(len(actual_page))
                 if (foment_instrument.edital_html != actual_page):
@@ -46,7 +55,7 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
                     )
             if foment_instrument.news_url != "":
                 actual_page = await get_html_async(
-                    foment_instrument.news_url)
+                    foment_instrument.news_url, browser)
                 actual_page = actual_page[:49999]
                 if (foment_instrument.news_html != actual_page):
                     foment_instruments_changed.append(
