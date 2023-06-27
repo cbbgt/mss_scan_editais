@@ -1,5 +1,4 @@
 
-from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 from typing import List
 from domain.entities.foment_instrument import FomentInstrument
@@ -68,7 +67,7 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
                         fomentInstrumentCode=foment_instrument.code,
                         newState=new_foment_instrument
                     )
-
+        browser.close()
         email_body = f"""
                 <h1>Alerta! Houve uma mudança nos seguintes sites:</h1>
                 <div>
@@ -137,7 +136,7 @@ class FomentInstrumentRepositoryGSheet(IFomentInstrumentRepository):
                     row_number, 7, newState.news_url)
                 self.control_sheet.update_cell(
                     row_number, 8, newState.news_html)
-        print("Esperando 0.5 segundo...")
+        print("Esperando 3 segundos...")
         time.sleep(3)
         return newState
 
