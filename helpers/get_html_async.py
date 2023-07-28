@@ -8,7 +8,7 @@ async def get_html(url, browser):
     page = await browser.newPage()
 
     try:
-        await page.goto(url, timeout=30000)
+        await page.goto(url, timeout=60000)
         html = await page.evaluate(
             "() => document.body.innerText"
         )
